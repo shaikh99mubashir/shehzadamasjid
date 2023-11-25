@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "850415328193",
+    "project_id": "sifututorone",
+    "storage_bucket": "sifututorone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:850415328193:android:3e012d67a38bc32d992d40",
+        "android_client_info": {
+          "package_name": "com.tutor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "850415328193-14g6oeahdvi1labnjsvsuirhd4i0sv06.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCHT1dHSMdORSjfKn6_QV3sGLSYzMjRrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "850415328193-14g6oeahdvi1labnjsvsuirhd4i0sv06.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
