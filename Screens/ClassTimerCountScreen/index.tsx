@@ -13,6 +13,7 @@ import moment from "moment"
 
 
 function ClassTimerCount({ navigation, route }: any) {
+    // console.log("route",route.params);
 
     const context = useContext(noteContext)
     const appState = useRef(AppState.currentState);
@@ -142,10 +143,6 @@ function ClassTimerCount({ navigation, route }: any) {
 
 
     useEffect(() => {
-        // ...
-
-
-
         setClockInTime()
         const subscription = AppState.addEventListener('change', handleAppStateChange);
 
@@ -162,73 +159,97 @@ function ClassTimerCount({ navigation, route }: any) {
 
 
 
-
+   
+    
 
 
     const handleClockOut = async () => {
-
-        const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.CAMERA,
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-
-            const options: any = {
-                title: 'Select Picture',
-                storageOptions: {
-                    skipBackup: true,
-                    path: 'images',
-                },
-                maxWidth: 250,
-                maxHeight: 250,
-                quality: 0.3,
-            };
-
-            launchCamera(options, (res: any) => {
-
-                if (res.didCancel) {
-                    console.log('User cancelled image picker');
-                } else if (res.error) {
-                    console.log('ImagePicker Error:', res.error);
-                } else {
-                    let startHour = item.startMinutes
-                    let startMinutes = item.startSeconds
-                    let endHour = startHour + hour == 24 ? 0 : startHour + hour
-                    let endMinutes = startMinutes + minutes
-                    if (startMinutes + minutes >= 60) {
-                        endMinutes = startMinutes + minutes - 60
-                        endHour = endHour + 1
-                    }
-
-                    let { assets } = res
-
-
-                    let data = {
-                        id: item.id,
-                        class_schedule_id: item?.class_schedule_id,
-                        endHour: endHour,
-                        endMinutes: endMinutes,
-                        startMinutes: item?.startSeconds,
-                        startHour: item?.startMinutes,
-                        hasIncentive: item?.hasIncentive ? item?.hasIncentive : 0,
-                        uri: assets[0].uri,
-                        type: assets[0].type,
-                        filename: assets[0].fileName,
-                        ticketID: item?.item?.ticketID,
-                        classAttendedID: item?.data?.classAttendedID,
-                        minutes: time.minutes,
-                        hour: time?.hour ? time.hour : 0
-
-                    }
-                    cleanTime()
-                    AsyncStorage.removeItem("classInProcess")
-                    AsyncStorage.removeItem("timer")
-                    navigation.replace("ClockOut", data)
-
-                }
-            })
-
+        // console.log("item====>",item);
+        let startHour = item.startMinutes
+        let startMinutes = item.startSeconds
+        let endHour = startHour + hour == 24 ? 0 : startHour + hour
+        let endMinutes = startMinutes + minutes
+        if (startMinutes + minutes >= 60) {
+          endMinutes = startMinutes + minutes - 60
+           endHour = endHour + 1
+        }
+        let data = {
+            teachid: item?.teachid,
+            loginid:item?.loginid,
+            endHour: endHour,
+            endMinutes: endMinutes,
+            startMinutes: item?.startSeconds,
+            startHour: item?.startMinutes,
+            minutes: time.minutes,
+            hour: time?.hour ? time.hour : 0
 
         }
+        cleanTime()
+        AsyncStorage.removeItem("classInProcess")
+        AsyncStorage.removeItem("timer")
+        navigation.replace("ClockOut", data)
+        // const granted = await PermissionsAndroid.request(
+        //     PermissionsAndroid.PERMISSIONS.CAMERA,
+        // );
+        // if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+
+        //     const options: any = {
+        //         title: 'Select Picture',
+        //         storageOptions: {
+        //             skipBackup: true,
+        //             path: 'images',
+        //         },
+        //         maxWidth: 250,
+        //         maxHeight: 250,
+        //         quality: 0.3,
+        //     };
+
+        //     launchCamera(options, (res: any) => {
+
+        //         if (res.didCancel) {
+        //             console.log('User cancelled image picker');
+        //         } else if (res.error) {
+        //             console.log('ImagePicker Error:', res.error);
+        //         } else {
+        //             let startHour = item.startMinutes
+        //             let startMinutes = item.startSeconds
+        //             let endHour = startHour + hour == 24 ? 0 : startHour + hour
+        //             let endMinutes = startMinutes + minutes
+        //             if (startMinutes + minutes >= 60) {
+        //                 endMinutes = startMinutes + minutes - 60
+        //                 endHour = endHour + 1
+        //             }
+
+        //             let { assets } = res
+
+
+        //             let data = {
+        //                 id: item.id,
+        //                 class_schedule_id: item?.class_schedule_id,
+        //                 endHour: endHour,
+        //                 endMinutes: endMinutes,
+        //                 startMinutes: item?.startSeconds,
+        //                 startHour: item?.startMinutes,
+        //                 hasIncentive: item?.hasIncentive ? item?.hasIncentive : 0,
+        //                 uri: assets[0].uri,
+        //                 type: assets[0].type,
+        //                 filename: assets[0].fileName,
+        //                 ticketID: item?.item?.ticketID,
+        //                 classAttendedID: item?.data?.classAttendedID,
+        //                 minutes: time.minutes,
+        //                 hour: time?.hour ? time.hour : 0
+
+        //             }
+        //             cleanTime()
+        //             AsyncStorage.removeItem("classInProcess")
+        //             AsyncStorage.removeItem("timer")
+        //             navigation.replace("ClockOut", data)
+
+        //         }
+        //     })
+
+
+        // }
 
 
     }

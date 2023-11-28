@@ -6,7 +6,7 @@ import Header from "../../Component/Header"
 import { launchCamera } from "react-native-image-picker"
 import Geolocation from "@react-native-community/geolocation"
 import axios from "axios"
-import { Base_Uri } from "../../constant/BaseUri"
+import { Base_Uri, Base_Url } from "../../constant/BaseUri"
 import noteContext from "../../context/noteContext"
 import { CommonActions, useIsFocused } from "@react-navigation/native"
 
@@ -18,7 +18,7 @@ function ClockOut({ navigation, route }: any) {
     let { tutorID } = context
 
     const data = route?.params
-    const items = route?.params
+    // const items = route?.params
 
 
 
@@ -73,53 +73,32 @@ function ClockOut({ navigation, route }: any) {
         setLoading(true)
         let formData = new FormData()
 
-        console.log(data, "data")
 
-        formData.append("id", data.classAttendedID)
-        formData.append("class_schedule_id", data.class_schedule_id)
-        formData.append("endMinutes", data.endHour)
-        formData.append("endSeconds", data.endMinutes)
-        formData.append("hasIncentive", data.hasIncentive)
-        formData.append('endTimeProofImage', {
-            uri: data.uri,
-            type: data.type,
-            name: data.filename,
-        });
+        formData.append("teachid", data.teachid)
+        formData.append("clockoutlatitude", currentLocation.latitude)
+        formData.append("clockoutlongitude", currentLocation.longitude)
+
+        console.log(data.ID, currentLocation.latitude, currentLocation.longitude, 'datataatattasvats');
+        // formData.append('endTimeProofImage', {
+        //     uri: data.uri,
+        //     type: data.type,
+        //     name: data.filename,
+        // });
         setLoading(true)
-        axios.post(`${Base_Uri}api/attendedClassClockOutTwo`, formData, {
+        axios.post(`${Base_Url}clockout`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         }).then((res) => {
-
-            axios.get(`${Base_Uri}api/tutorFirstReportListing/${tutorID}`).then(({ data }) => {
-                let { tutorReportListing } = data
-
-                let thisClass = tutorReportListing && tutorReportListing?.length > 0 && tutorReportListing.filter((e: any, i: number) => {
-                    return items.class_schedule_id == e.scheduleID
-                })
-
-
-
-                if (thisClass && thisClass.length > 0) {
-
-
-
-                    navigation.dispatch(
-                        CommonActions.reset({
-                            index: 0,
-                            routes: [{ name: 'BackToDashboard' }],
-                        })
-                    );
-                    setLoading(false)
-
-                } else {
-                    navigation.replace("ReportSubmission", items)
-                    setLoading(false)
-                }
-
-            })
-
+            navigation.replace("Main")
+            ToastAndroid.show("Class Clockout Successfully", ToastAndroid.SHORT)
+            // navigation.dispatch(
+            //     CommonActions.reset({
+            //         index: 0,
+            //         routes: [{ name: 'BackToDashboard' }],
+            //     })
+            // );
+            setLoading(false)
 
         }).catch((error) => {
             setLoading(false)
@@ -159,11 +138,6 @@ function ClockOut({ navigation, route }: any) {
 
         totalHours = myHours.toString().split(".")[0]
         totalMinutes = Math.round(((Number(minutes) / 100) * 60))
-
-
-
-
-
     }
 
     return (

@@ -16,7 +16,9 @@ const CustomDropDown = (props: any) => {
   let { ddTitle, categoryData, dataShow, searchData, searchFunc, subject, search, headingStyle, categoryShow, dropdownPlace, dropdownContainerStyle, setSelectedSubject, selectedSubject } = props
 
 
-
+  // console.log("subject",subject);
+  // console.log("categoryShow",categoryShow);
+  
 
   const [selectedServicedata, setSelectedServicedata]: any = useState({});
   const [serviceDD, setServiceDD] = useState(false);
@@ -28,8 +30,10 @@ const CustomDropDown = (props: any) => {
   };
 
   const filterSearchData = (text: string) => {
-
+    // console.log("text--------->",text);
+    
     if (text.length > 0) {
+      console.log("text--------->",text);
       searchFunc(text, search)
     }
 

@@ -5,46 +5,94 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  Image,
+  TextInput,
 } from 'react-native';
-import React, {useRef, useState, useEffect} from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import PhoneInput from 'react-native-phone-number-input';
-import {Theme} from '../../constant/theme';
+import { Theme } from '../../constant/theme';
 import axios from 'axios';
-import {Base_Uri} from '../../constant/BaseUri';
-import {convertArea} from 'geolib';
+import { Base_Uri, Base_Url } from '../../constant/BaseUri';
+import { convertArea } from 'geolib';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const Login = ({navigation}: any) => {
+const Login = ({ navigation }: any) => {
   let [phoneNumber, setPhoneNumber] = useState('');
-
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const phoneInput = useRef(null);
 
   const handleLoginPress = () => {
     setLoading(true);
+    if (!email) {
+      ToastAndroid.show('Kindly Enter Email Address', ToastAndroid.SHORT);
+      setLoading(false);
+      return;
+    }
+
+    let emailReg = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
+    let testEmail = emailReg.test(email);
+
+    if (!testEmail) {
+      ToastAndroid.show('Invalid Email Address', ToastAndroid.SHORT);
+      setLoading(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+    console.log('email',email,password);
+    
     axios
-      .get(`${Base_Uri}loginAPI/${phoneNumber}`)
-      .then(({data}) => {
-        if (data.status == 404) {
+      .post(`${Base_Url}login`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(({ data }) => {
+        // console.log("data=====>", data);
+
+        if (data?.message !== 'Login successful') {
           setLoading(false);
-          ToastAndroid.show(data.errorMessage, ToastAndroid.SHORT);
+          ToastAndroid.show(data?.message, ToastAndroid.SHORT);
           return;
         }
-        if (data.status == 200) {
-          ToastAndroid.show(
-            'Verification Code Successfully send to your registered email',
-            ToastAndroid.SHORT,
-          );
-          navigation.navigate('Verification', data);
+        if (data?.message == 'Login successful') {
           setLoading(false);
+          ToastAndroid.show(data?.message, ToastAndroid.SHORT);
+          let mydata = JSON.stringify(data);
+          AsyncStorage.setItem('loginAuth', mydata);
+          formData.append('userid', data?.user_id);
+          axios
+            .get(`${Base_Url}getteachersdata`, {
+              params: {
+                userid: data?.user_id,
+              },
+            })
+            .then((response) => {
+              let tutorData = response.data;
+              // console.log("tutorData.teacherdata",tutorData.teacherdata, 'data');
+              // console.log("tutorData.teachers",tutorData.teachers, 'data');
+              let teacherdata = JSON.stringify(tutorData.teacherdata);
+              let teachers = JSON.stringify(tutorData.teachers);
+              AsyncStorage.setItem('teacherData', teacherdata);
+              AsyncStorage.setItem('teachers', teachers);
+              console.log("teacherdata",teacherdata);
+              navigation.replace('Main')
+            })
+            .catch((error) => {
+              console.log("error", error);
+            });
         }
       })
       .catch(error => {
-        setLoading(false);
         console.log("error",error);
-        
-        ToastAndroid.show('Internal Server Error', ToastAndroid.SHORT);
+        ToastAndroid.show('Server is Down Try Again', ToastAndroid.SHORT);
+        setLoading(false);
       });
+
   };
 
   return (
@@ -53,15 +101,20 @@ const Login = ({navigation}: any) => {
         backgroundColor: 'white',
         height: '100%',
         justifyContent: 'center',
-        paddingHorizontal: 15,
+        paddingHorizontal: 10,
       }}>
-      <Text style={{fontSize: 25, color: 'black'}}>
-        Enter your{'\n'}mobile number
+      <Image
+        source={require('../../Assets/Images/logo.png')}
+        resizeMode="contain"
+        style={{ width: "100%", marginTop: -60 }}
+      />
+      <Text style={{ fontSize: 25, color: 'black', display: "flex", alignSelf: 'center', marginVertical: 20 }}>
+        Enter your Credentials
       </Text>
-      <Text style={{fontSize: 14, color: 'black', marginTop: 14}}>
+      {/* <Text style={{fontSize: 14, color: 'black', marginTop: 14}}>
         A verification code will be sent{'\n'}to your registered email
-      </Text>
-      <View style={styles.container}>
+      </Text> */}
+      {/* <View style={styles.container}>
         <PhoneInput
           ref={phoneInput}
           placeholder="Enter Your Number"
@@ -83,7 +136,45 @@ const Login = ({navigation}: any) => {
             setPhoneNumber(text);
           }}
         />
-      </View>
+      </View> */}
+      <TextInput
+        placeholder="Enter Your Email"
+        placeholderTextColor={Theme.gray}
+        style={{
+          height: 60,
+          backgroundColor: 'white',
+          borderRadius: 10,
+          fontSize: 16,
+          borderColor: Theme.black,
+          marginBottom: 10,
+          borderWidth: 1,
+          padding: 10,
+          color: Theme.black,
+        }}
+        onChangeText={text => {
+          setEmail(text);
+        }}
+      />
+      <TextInput
+        placeholder="Enter Your Password"
+        placeholderTextColor={Theme.gray}
+        secureTextEntry={true}
+        style={{
+          height: 60,
+          backgroundColor: 'white',
+          borderRadius: 10,
+          fontSize: 16,
+          borderColor: Theme.black,
+          marginBottom: 10,
+          borderWidth: 1,
+          padding: 10,
+          color: Theme.black,
+        }}
+        onChangeText={text => {
+          setPassword(text);
+        }}
+      />
+
       {/* Submit Button */}
 
       <View
@@ -115,7 +206,7 @@ const Login = ({navigation}: any) => {
             </Text>
           )}
         </TouchableOpacity>
-        <View
+        {/* <View
           style={{
             width: '100%',
             alignItems: 'center',
@@ -134,7 +225,7 @@ const Login = ({navigation}: any) => {
           <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
             <Text style={{color: Theme.black, fontWeight: 'bold'}}>Signup</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     </View>
   );

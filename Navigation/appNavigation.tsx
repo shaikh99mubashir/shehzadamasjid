@@ -102,7 +102,7 @@ function BottomNavigation({ route }: any) {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Job Ticket"
         component={JobTicket}
         options={{
@@ -290,7 +290,7 @@ function BottomNavigation({ route }: any) {
             </View>
           ),
         }}
-      />
+      /> */}
     </Tab.Navigator>
   );
 }
