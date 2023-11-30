@@ -98,6 +98,7 @@ const Splash = ({navigation}: any) => {
     // navigateToHomeScreen();
     setTimeout(checkLoginAuthAndNavigate, 3000);
   }, []);
+  
   return (
     <View
       style={{

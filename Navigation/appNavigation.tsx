@@ -39,6 +39,7 @@ import AttendedDetails from '../Screens/AttendedDetails';
 import PaymentHistory from '../Screens/PaymentHistory';
 import Signup from '../Screens/TutorRegister';
 import TutorDetailForm from '../Screens/TutorDetailForm';
+import ShowAttendence from '../Screens/ShowAttendence';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -243,7 +244,7 @@ function BottomNavigation({ route }: any) {
             </View>
           ),
         }}
-      />
+      />*/}
       <Tab.Screen
         name="More"
         component={More}
@@ -290,7 +291,7 @@ function BottomNavigation({ route }: any) {
             </View>
           ),
         }}
-      /> */}
+      /> 
     </Tab.Navigator>
   );
 }
@@ -323,6 +324,11 @@ function AppNavigation() {
           options={{ headerShown: false }}
           name="ReportSubmissionHistory"
           component={ReportSubmissionHistory}
+        />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="ShowAttendence"
+          component={ShowAttendence}
         />
         <Stack.Screen
           options={{ headerShown: false }}

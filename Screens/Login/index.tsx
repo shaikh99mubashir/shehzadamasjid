@@ -43,7 +43,7 @@ const Login = ({ navigation }: any) => {
     const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
-    console.log('email',email,password);
+    // console.log('email',email,password);
     
     axios
       .post(`${Base_Url}login`, formData, {

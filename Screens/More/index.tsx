@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext,useEffect } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import Header from '../../Component/Header';
 import { Theme } from '../../constant/theme';
@@ -7,13 +7,37 @@ import TutorDetailsContext from '../../context/tutorDetailsContext';
 import { Base_Uri } from '../../constant/BaseUri';
 
 function More({ navigation }: any) {
-
+  const [teacherData, setTeacherData] = useState<any>()
   const context = useContext(TutorDetailsContext)
 
   const { tutorDetails } = context
 
   console.log(tutorDetails, "detailss")
 
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('teacherData');
+      console.log("jsonValue", jsonValue);
+   
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      // Error retrieving data
+      console.error('Error retrieving data:', e);
+    }
+  };
+  useEffect(() => {
+    getData().then(data => {
+      if (data) {
+        setTeacherData(data)
+        
+      } else {
+        console.log('No data found');
+        AsyncStorage.removeItem('teacherData')
+        AsyncStorage.removeItem('teachers')
+        navigation.replace('Login')
+      }
+    });
+  }, [])
 
   const [modalVisible, setModalVisible] = useState(false);
   const handleFilterPress = () => {
@@ -66,7 +90,7 @@ function More({ navigation }: any) {
             }}>
             <View
               style={{
-                width: '90%',
+                width: '100%',
                 flexDirection: 'row',
                 gap: 10,
                 alignItems: 'center',
@@ -78,22 +102,64 @@ function More({ navigation }: any) {
               <View>
                 <Text
                   style={{ fontSize: 16, fontWeight: '600', color: Theme.black }}>
-                  {tutorDetails?.displayName ?? tutorDetails?.full_name}
+                   {teacherData?.first_name} {teacherData?.last_name}
                 </Text>
                 <Text
                   style={{ fontSize: 14, fontWeight: '300', color: Theme.gray }}>
-                  {tutorDetails?.email}
+                  {teacherData?.mobileno}
                 </Text>
               </View>
+            </View>
+            {/* <Image
+              source={require('../../Assets/Images/right.png')}
+              style={{ width: 20, height: 20 }}
+              resizeMode="contain"
+            /> */}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('ShowAttendence')}
+            activeOpacity={0.8}
+            style={{
+              paddingVertical: 15,
+              borderBottomWidth: 1,
+              borderBottomColor: '#eee',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <View
+              style={{
+                width: '90%',
+                flexDirection: 'row',
+                gap: 15,
+                alignItems: 'center',
+              }}>
+              <View
+                style={{
+                  backgroundColor: 'aqua',
+                  padding: 10,
+                  borderRadius: 10,
+                }}>
+                <Image
+                  source={require('../../Assets/Images/report.png')}
+                  style={{ height: 15, width: 15 }}
+                />
+              </View>
+              <Text
+                style={{ fontSize: 16, fontWeight: '600', color: Theme.black }}>
+               View Attendence Report
+              </Text>
             </View>
             <Image
               source={require('../../Assets/Images/right.png')}
               style={{ width: 20, height: 20 }}
               resizeMode="contain"
             />
-          </TouchableOpacity>
+          </TouchableOpacity> 
+
           {/* notification */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => navigation.navigate('Notifications')}
             activeOpacity={0.8}
             style={{
@@ -133,9 +199,9 @@ function More({ navigation }: any) {
               style={{ width: 20, height: 20 }}
               resizeMode="contain"
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {/* Students */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => navigation.navigate('Students')}
             activeOpacity={0.8}
             style={{
@@ -174,9 +240,9 @@ function More({ navigation }: any) {
               style={{ width: 20, height: 20 }}
               resizeMode="contain"
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {/* Payment History */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => navigation.navigate('PaymentHistory')}
             activeOpacity={0.8}
             style={{
@@ -215,9 +281,9 @@ function More({ navigation }: any) {
               style={{ width: 20, height: 20 }}
               resizeMode="contain"
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {/*Report Submission History */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => navigation.navigate('ReportSubmissionHistory')}
             activeOpacity={0.8}
             style={{
@@ -256,9 +322,9 @@ function More({ navigation }: any) {
               style={{ width: 20, height: 20 }}
               resizeMode="contain"
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {/*Faq */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => navigation.navigate('FAQs')}
             style={{
@@ -297,7 +363,7 @@ function More({ navigation }: any) {
               style={{ width: 20, height: 20 }}
               resizeMode="contain"
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {/* Report Submission */}
           {/* <TouchableOpacity
             activeOpacity={0.8}
