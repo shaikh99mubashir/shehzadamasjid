@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,TouchableOpacity,ActivityIndicator,ToastAndroid } from 'react-native'
+import { StyleSheet, Text, View,TouchableOpacity,ActivityIndicator,ToastAndroid, FlatList } from 'react-native'
 import React,{useState} from 'react'
 import Header from '../../Component/Header'
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -26,8 +26,7 @@ const ShowAttendence = ({navigation}:any) => {
     setShowEndDatePicker(true);
     setShowStartDatePicker(false);
   };
-  console.log("startDate",startDate);
-  console.log("endDate",endDate);
+
   
   const onChange = (event:any, selectedDate:any) => {
     if (selectedDate) {
@@ -58,6 +57,9 @@ const ShowAttendence = ({navigation}:any) => {
     setShowEndDatePicker(false);
   };
 
+  const [attendanceData, setAttendanceData] = useState([]);
+
+  console.log("data====>",attendanceData);
   const getAttendenceData = () => {
     setLoading(true);
     if (startDate === null && endDate === null) {
@@ -66,24 +68,90 @@ const ShowAttendence = ({navigation}:any) => {
       return;
     }
     const formData = new FormData();
-    formData.append('startDate', startDate);
     formData.append('endDate', endDate);
+    formData.append('startDate', startDate);
+    console.log("Request Payload:", { startDate, endDate });
     axios
-      .post(`${Base_Url}getAttendanceReport`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      .get(`${Base_Url}getAttendanceReport/1`,  {
+        params: {
+          startDate:startDate,
+          endDate:endDate
         },
       })
-      .then(({ data }) => {
+      .then(({data}) => {
+        setAttendanceData(data.attendanceReport);
         setLoading(false);
-        console.log("data",data);
+        
         
       })
       .catch(( error ) => {
-        console.log(error);
+        console.log("error.response",error.response);
+        console.log("error.message",error.message);
+        console.log("error.code",error.code);
         setLoading(false);
       })
   }
+
+  function convertDateFormat(date: string): string {
+    const dateObj = new Date(date);
+    const day = dateObj.getDate();
+    const monthNames = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    const monthIndex = dateObj.getMonth();
+    const year = dateObj.getFullYear();
+
+    return `${day} ${monthNames[monthIndex]} ${year}`;
+  }
+  const renderItem = ({ item }: any) => (
+    <View style={styles.itemContainer}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        {/* <View style={{ flexDirection: 'column' }}>
+          <Text style={{ color: 'black', fontWeight: '600' }}>
+          Date
+          </Text>
+          <Text style={{ color: 'grey', }}>
+          {convertDateFormat(item.creation_date)}
+          </Text>
+        </View> */}
+        <View style={{ flexDirection: 'column' }}>
+          <Text style={{ color: 'black', fontWeight: '600' }}>
+            Date
+          </Text>
+          <Text style={{ color: 'grey', }}>
+          {convertDateFormat(item.creation_date)}
+          </Text>
+        </View>
+
+      </View>
+      <Text style={{ marginTop: 5, color: 'black', fontWeight: '600' }}>
+      Clock In Time : <Text style={{ color: 'grey', }}>{item.clockintime}</Text>
+      </Text>
+      <Text style={{ marginTop: 5, color: 'black', fontWeight: '600' }}>
+      Clock Out Time :<Text style={{ color: 'grey', }}> {item.clockouttime}</Text>
+      </Text>
+      <Text style={{ marginTop: 5, color: 'black', fontWeight: '600' }}>
+      Clockin Latitude : <Text style={{ color: 'grey', }}>{item.clockinlatitude}</Text>
+      </Text>
+      <Text style={{ marginTop: 5, color: 'black', fontWeight: '600' }}>
+      Clockin Longitude :<Text style={{ color: 'grey', }}> {item.clockinlongitude}</Text>
+      </Text>
+      <Text style={{ marginTop: 5, color: 'black', fontWeight: '600' }}>
+      Clock Out Latitude : <Text style={{ color: 'grey', }}>{item.clockoutlatitude}</Text>
+      </Text>
+      <Text style={{ marginTop: 5, color: 'black', fontWeight: '600' }}>
+      Clock Out Longitude :<Text style={{ color: 'grey', }}> {item.clockoutlongitude}</Text>
+      </Text>
+      <Text style={{ marginTop: 5, color: 'black', fontWeight: '600' }}>
+      Location Name Clockin : <Text style={{ color: 'grey', }}>{item.locationNameClockin}</Text>
+      </Text>
+      <Text style={{ marginTop: 5, color: 'black', fontWeight: '600' }}>
+      Location Name Clockout :<Text style={{ color: 'grey', }}> {item.locationNameClockout}</Text>
+      </Text>
+    </View>
+  );
+
   return (
     <View style={{ flex: 1, backgroundColor: 'white', }}>
       <Header title="Attendence" navigation={navigation} backBtn />
@@ -117,6 +185,12 @@ const ShowAttendence = ({navigation}:any) => {
           )}
           </TouchableOpacity>
         </View>
+
+        <FlatList
+              data={attendanceData}
+              renderItem={renderItem}
+              
+            />
       {showStartDatePicker && (
         <DateTimePicker
           testID="startDatePicker"
@@ -145,4 +219,16 @@ const ShowAttendence = ({navigation}:any) => {
 
 export default ShowAttendence
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {},
+  itemContainer: {
+    backgroundColor: 'white',
+    marginHorizontal: 15,
+    marginVertical: 10,
+    borderRadius: 5,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'silver',
+    elevation: 1
+  },
+});

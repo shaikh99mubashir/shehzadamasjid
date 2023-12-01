@@ -53,6 +53,8 @@ function More({ navigation }: any) {
   const ApplyButton = async () => {
     handleCloseModal();
     await AsyncStorage.removeItem("loginAuth")
+    await AsyncStorage.removeItem('teacherData');
+    await AsyncStorage.removeItem('teachers');
     navigation.reset({
       index: 0,
       routes: [
@@ -78,7 +80,7 @@ function More({ navigation }: any) {
         <View style={{ paddingHorizontal: 15 }}>
           {/* Profile */}
           <TouchableOpacity
-            onPress={() => navigation.navigate('Profile')}
+            // onPress={() => navigation.navigate('Profile')}
             activeOpacity={0.8}
             style={{
               paddingVertical: 15,

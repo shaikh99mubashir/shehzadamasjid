@@ -52,7 +52,7 @@ function Home({ navigation, route }: any) {
   const getData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('teacherData');
-      console.log("jsonValue", jsonValue);
+      // console.log("jsonValue", jsonValue);
    
       return jsonValue != null ? JSON.parse(jsonValue) : null;
     } catch (e) {
@@ -80,7 +80,7 @@ function Home({ navigation, route }: any) {
       console.error('Error retrieving teachers:', error);
     }
   };
-
+  const focus = useIsFocused()
   const getClassInProcess = async () => {
     let data: any = await AsyncStorage.getItem('classInProcess');
     data = JSON.parse(data);
@@ -103,9 +103,9 @@ function Home({ navigation, route }: any) {
         navigation.replace('Login')
       }
     });
-  }, [])
+  }, [classInProcess,focus])
   // console.log("teachersData", teachersData);
-  console.log("selectedTeacher", selectedTeacher);
+  // console.log("selectedTeacher", selectedTeacher);
   const handleSearchData = (text: string, type: string) => {
     let myData = teachersData && teachersData.length > 0 && teachersData.filter((e: any, i: number) => {
 
@@ -285,6 +285,7 @@ function Home({ navigation, route }: any) {
           
           {classInProcess && Object.keys(classInProcess).length > 0 ? (
             <TouchableOpacity
+            activeOpacity={0.8}
               onPress={() =>
                 navigation.navigate('ClassTimerCount', classInProcess)
               }
